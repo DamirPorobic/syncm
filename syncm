@@ -1,0 +1,63 @@
+#!/bin/bash
+#
+# This script is used to sync songs with a device based on an exported amarok playlist
+# The remote device must be capable of running ssh and rsync. 
+#
+
+# Export the playlist from amarok as "MP3 audio (streamed)" and provide it as input 
+# to this script. As second and third input you can provide the IP address of the 
+# remote device and the ssh port.
+#
+
+tmpdir="/tmp"                     # Temporary location for storing data         
+storedir="/sdcard/Music/amarok"   # Where to store the songs on the remote device
+execdir="/home/$USER/bin"         # Here the url_encode text file is located
+sshaddr="192.168.0.21"            # IP address of the remote device
+sshport="45404"                   # SSH port to be used
+
+
+if [ -n "$1" ]
+then
+	# Check if any ip address was provided
+	if [ -n "$2" ]
+	then
+		sshaddr="$2"
+	fi
+
+	# Check if any non-standard ssh port was provided
+	if [ -n "$3" ]
+	then
+		sshport="$3"
+	fi
+
+	# Normalize playlist into a list of only file paths, removing url enconding
+        echo Normalizing paths to music files...	
+        sed -f "$execdir"/url_encode $1 | grep -v "#EXT\|^$" > "$tmpdir"/.pathlist
+
+	# Create a temporary folder for storing the songs before syncing
+	mkdir "$tmpdir"/.tmpdirectory
+	
+	# Loop through every song in the in the list	
+	echo Creating links in temp folder...
+	while IFS= read path
+	do
+		#Get file name of every song
+		name=$(basename "$path")
+
+		#Create a symbolic link in the temp folder
+		ln -s "$path" "$tmpdir"/.tmpdirectory/"$name"
+	done < "$tmpdir"/.pathlist
+
+	#Sync the temp folder with the remote directory
+	echo Copying files to remote device...
+        rsync -avz -e "ssh -p \"$sshport\"" --ignore-existing --copy-links --delete --no-perms --no-times --size-only  "$tmpdir"/.tmpdirectory/ "$sshaddr":"$storedir"/
+	
+	# Cleanup, remove all files that we have generated in the process
+	echo Cleaing up. We\'re done.
+	rm -rdf "$tmpdir"/.tmpdirectory
+	rm -f "$tmpdir"/.pathlist
+else
+	echo No input playlist file provided.
+fi
+
+exit 0 
