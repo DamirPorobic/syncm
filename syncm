@@ -12,8 +12,8 @@
 tmpdir="/tmp"                     # Temporary location for storing data         
 storedir="/sdcard/Music/amarok"   # Where to store the songs on the remote device
 execdir="/home/$USER/bin"         # Here the url_encode text file is located
-sshaddr="192.168.0.21"            # IP address of the remote device
-sshport="45404"                   # SSH port to be used
+sshaddr="0.0.0.0"                 # IP address of the remote device
+sshport="22"                      # SSH port to be used
 
 
 if [ -n "$1" ]
