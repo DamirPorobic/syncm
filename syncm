@@ -8,9 +8,11 @@
 # to this script. As second and third input you can provide the IP address of the 
 # remote device and the ssh port.
 #
+# v1.00
+#
 
 tmpdir="/tmp"                     # Temporary location for storing data         
-storedir="/sdcard/Music/amarok"   # Where to store the songs on the remote device
+storedir="/sdcard/Music/syncm"    # Where to store the songs on the remote device
 execdir="/home/$USER/bin"         # Here the url_encode text file is located
 sshaddr="0.0.0.0"                 # IP address of the remote device
 sshport="22"                      # SSH port to be used
