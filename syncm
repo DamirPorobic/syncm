@@ -26,6 +26,7 @@ execdir="/home/$USER/bin"         # Here the url_encode text file is located
 sshaddr="0.0.0.0"                 # IP address of the remote device
 sshport="22"                      # SSH port to be used
 
+# Clean up function called anytime the scripts exits
 CleanUp()
 {
 	echo Cleaning up.
